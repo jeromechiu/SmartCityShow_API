@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-# from jsonfield import JSONField
 from package_info.models import Package
 from jsonfield import JSONField
 
@@ -16,3 +15,4 @@ class Status(models.Model):
         primary_key=True
     )
 	status = JSONField()
+    

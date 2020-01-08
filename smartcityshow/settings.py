@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'delivery_timelines',
     'package_info',
+    'devices',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -122,3 +124,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+QRCODE_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.\
+eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1Nzg\
+0NTEzOTIsImV4cCI6MTYwOTk4NzM5MiwiYXVkIjoiIiwic3ViIjoi\
+IiwicHJvamVjdCI6IkNJUkMgU21hcnRDaXR5U2hvdyIsIkVtYWlsI\
+joiamVyb21lQGNvcmV0cm9uaWMuY29tIn0.2IkAQWA67G-EOWlx-L4Sj0lf4Baeia7-o6Eo4c7HE8g'
