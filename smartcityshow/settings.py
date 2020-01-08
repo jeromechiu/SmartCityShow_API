@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'delivery_timelines',
     'package_info',
+    'devices',
+    'users',
 ]
 
 MIDDLEWARE = [

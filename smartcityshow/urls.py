@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
+from django.conf.urls import include
+from delivery_timelines import urls as status_url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url('api/v1/mapp/updatestatus/', include(status_url)),
 ]
