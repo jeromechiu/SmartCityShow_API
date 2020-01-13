@@ -22,8 +22,13 @@ else:
 
 # Create your views here.
 class StatusAdminView(APIView):
+<<<<<<< HEAD
     def post(self, request, *args, **kwargs):
         logging.debug("in post of StatusAdminView")
+=======
+    def get(self, request, *args, **kwargs):
+        logging.debug("in get")
+>>>>>>> 18da751fdc90f73d300e1fc02432f0cc9822ce2d
         pid = kwargs['pid']
         if request.headers.get('Content-Type') == 'application/json':
             try:

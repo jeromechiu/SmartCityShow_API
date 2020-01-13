@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #-*- coding: utf-8 -*-
 
 
@@ -87,3 +88,8 @@ class HubQRAdminView(APIView):
         else:
             logging.debug('HTTP Header Method Incorrect')
             return HttpResponse(status=403)
+=======
+from django.shortcuts import render
+
+# Create your views here.
+>>>>>>> 18da751fdc90f73d300e1fc02432f0cc9822ce2d
