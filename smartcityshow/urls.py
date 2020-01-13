@@ -18,16 +18,10 @@ from django.urls import path
 from django.conf.urls import url
 from django.conf.urls import include
 from delivery_timelines import urls as status_url
-<<<<<<< HEAD
 from devices import urls as devices_url
-=======
->>>>>>> 18da751fdc90f73d300e1fc02432f0cc9822ce2d
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url('api/v1/mapp/updatestatus/', include(status_url)),
-<<<<<<< HEAD
     url('api/v1/hub/checkqr/', include(devices_url)),
-=======
->>>>>>> 18da751fdc90f73d300e1fc02432f0cc9822ce2d
 ]
