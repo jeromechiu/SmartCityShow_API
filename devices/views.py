@@ -1,10 +1,10 @@
-<<<<<<< HEAD
 #-*- coding: utf-8 -*-
 
 
 import logging
 import sys
 import json
+import time
 import requests
 from rest_framework.views import APIView
 from django.http import HttpResponse, HttpRequest, JsonResponse
@@ -17,6 +17,7 @@ from delivery_timelines.models import Status
 from rest_framework.renderers import JSONRenderer
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from fcm_django.models import FCMDevice
 
 if settings.DEBUG:
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, \
@@ -43,7 +44,15 @@ class HubQRAdminView(APIView):
                 return HttpResponse(status=403)
             else:
                 if data['action'] == 'Send':
-                    Status.objects.filter(package_id=data['package_id']).delete()
+                    package_id = Package.objects.get(id=data['package_id'])
+                    Status.objects.filter(package_id=package_id).delete()
+                    t = datetime.utcnow().replace(microsecond=0).isoformat()
+                    s = json.dumps({"Driver_Arrival":t})
+                    status = Status(package_id=package_id, status=s).save()
+                    sendFCM(t, 'driverarrival')
+                    time.sleep(5)
+                    # add event onto status
+
                     try:
                         hub = Hub.objects.get(id=data['hub_id'])
                     except ObjectDoesNotExist as e:
@@ -52,11 +61,24 @@ class HubQRAdminView(APIView):
                     logging.debug("Send Request to Hub at: %s", hub_url)
                     r = requests.get(hub_url, params=request.GET)
                     if r.status_code == 200:
-                        package_id = Package.objects.get(id=data['package_id'])
-                        s = json.dumps({"package_exhibit":datetime.utcnow().isoformat()})
+                        t = datetime.utcnow().replace(microsecond=0).isoformat()
+                        sendFCM(t, 'opendoor')
+                        time.sleep(5)
+                        
+                        t = datetime.utcnow().replace(microsecond=0).isoformat()
+                        s = json.dumps({"package_exhibit":t})
                         status = Status(package_id=package_id, status=s).save()
+                        sendFCM(t, 'package_exhibit')
                         return HttpResponse(status=200)
+                    else:
+                        return HttpResponse(status=500)
                 elif data['action'] == 'Get':
+                    # package_id = Package.objects.get(id=data['package_id'])
+                    # t = datetime.utcnow().replace(microsecond=0).isoformat()
+                    # s = json.dumps({"Receiver_Arrival":t})
+                    # status = Status(package_id=package_id, status=s).save()
+                    # time.sleep(5)
+                    # # add event onto status
                     try:
                         hub = Hub.objects.get(id=data['hub_id'])
                     except ObjectDoesNotExist as e:
@@ -65,9 +87,14 @@ class HubQRAdminView(APIView):
                     logging.debug("Send Request to Hub at: %s", hub_url)
                     r = requests.get(hub_url, params=request.GET)
                     if r.status_code == 200:
+                        t = datetime.utcnow().replace(microsecond=0).isoformat()
+                        sendFCM(t, 'opendoor')
+                        time.sleep(5)
                         package_id = Package.objects.get(id=data['package_id'])
-                        status = Status.objects.get(package_id=package_id)                    
-                        s = {"package_land":datetime.utcnow().isoformat()}
+                        print(package_id)
+                        status = Status.objects.get(package_id=package_id)
+                        t = datetime.utcnow().replace(microsecond=0).isoformat()              
+                        s = {"Receiver_Arrival":t}
                         if isinstance(status.status, str):
                             current_s = json.loads(status.status)
                         else:
@@ -75,21 +102,88 @@ class HubQRAdminView(APIView):
                         current_s.update(s)
                         status.status = current_s
                         status.save()
+                        sendFCM(t, 'receiverarrival')
+                        time.sleep(5)
                         return HttpResponse(status=200)
                 else:
                     logging.debug('Incorrect action')
                     return HttpResponse(status=403)
-
-
-                
-                
-            
-
         else:
-            logging.debug('HTTP Header Method Incorrect')
+            logging.debug('HTTP Content-Type Incorrect')
             return HttpResponse(status=403)
-=======
-from django.shortcuts import render
+class DroneTakeoffAdminView(APIView):
+    def get(self, request, *args, **kwargs):
+        logging.debug("in get of DroneTakeoffAdminView")
+        hid = kwargs['hid']
+        pid = kwargs['pid']
+        if addStatus(pid, "package_onmission") == "None":
+            return HttpResponse(status=500)
+        return HttpResponse(status=200)
 
-# Create your views here.
->>>>>>> 18da751fdc90f73d300e1fc02432f0cc9822ce2d
+
+class DroneArrivalAdminView(APIView):
+    def get(self, request, *args, **kwargs):
+        logging.debug("in get of DroneArrivalAdminView")
+        hid = kwargs['hid']
+        pid = kwargs['pid']
+        if addStatus(pid, "package_arrival") == "None":
+            return HttpResponse(status=500)
+        return HttpResponse(status=200)
+
+
+class DroneGotAdminView(APIView):
+    def get(self, request, *args, **kwargs):
+        logging.debug("in get of DroneGotAdminView")
+        hid = kwargs['hid']
+        pid = kwargs['pid']
+        if addStatus(pid, "package_got") == "None":
+            return HttpResponse(status=500)
+        return HttpResponse(status=200)
+
+class UploadFCMTokenAdminView(APIView):
+    def post(self, request, *args, **kwargs):
+        logging.debug("in get of UploadFCMTokenAdminView")
+        if request.headers.get('Content-Type') == 'application/json':
+            pass
+        else:
+            logging.debug('HTTP Content-Type Incorrect')
+            return HttpResponse(status=403)
+
+
+def addStatus(package_id, status_key):
+    package_id = Package.objects.get(id=package_id)
+    status = Status.objects.get(package_id=package_id)
+    t = datetime.utcnow().replace(microsecond=0).isoformat()
+    s = {status_key:t}
+    if isinstance(status.status, str):
+        current_s = json.loads(status.status)
+    else:
+        current_s = status.status
+    current_s.update(s)
+    status.status = current_s
+    status.save()
+    sendFCM(t, status_key)
+    return status
+
+
+
+def sendFCM(time, status_key):
+    keyword = {
+        'package_onmission':'Package on the air',
+        'package_arrival':'Package arrival',
+        'package_got':'Package already got',
+        'package_land':'Drone Landing',
+        'package_exhibit':'Package Exhibiting',
+        'opendoor':'Door Opened',
+        'driverarrival':'Driver Arrival',
+        'receiverarrival':'Receiver Arrival'
+    }
+    from fcm_django.models import FCMDevice
+    device = FCMDevice.objects.all()
+    logging.debug(device)
+    s = '{time} {status}'.format(time=time, status=keyword[status_key])
+    try:
+        device.send_message(title="CiRC", icon='@mipmap-xxxhdpi/drone_pin',body=s,color = "#391089")
+    except Excetion as e:
+        logging.debug(e)
+    return True

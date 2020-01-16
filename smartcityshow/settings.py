@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'fcm_django',
     'delivery_timelines',
     'package_info',
     'devices',
@@ -130,3 +131,16 @@ eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1Nzg\
 0NTEzOTIsImV4cCI6MTYwOTk4NzM5MiwiYXVkIjoiIiwic3ViIjoi\
 IiwicHJvamVjdCI6IkNJUkMgU21hcnRDaXR5U2hvdyIsIkVtYWlsI\
 joiamVyb21lQGNvcmV0cm9uaWMuY29tIn0.2IkAQWA67G-EOWlx-L4Sj0lf4Baeia7-o6Eo4c7HE8g'
+
+FCM_DJANGO_SETTINGS = {
+        "APP_VERBOSE_NAME": "SmartCityShow",
+         # default: _('FCM Django')
+        "FCM_SERVER_KEY": "AAAA4VQfoyY:APA91bHey9SO2PkXrOvVD4hOuRvY2p2QA8PJ9A6bxu-PTyoC2VdBkcfF84KvdTNekIpNlkEyVN9exD4MmRY3tFv1pSRbUn_Mcy9HUEWzzxFkE9t58rMwJRqqU7GdkQNeQMRFygnrrEex",
+         # true if you want to have only one active device per registered user at a time
+         # default: False
+        "ONE_DEVICE_PER_USER": False,
+         # devices to which notifications cannot be sent,
+         # are deleted upon receiving error response from FCM
+         # default: False
+        "DELETE_INACTIVE_DEVICES": False,
+}

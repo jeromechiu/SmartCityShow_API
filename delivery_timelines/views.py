@@ -22,13 +22,11 @@ else:
 
 # Create your views here.
 class StatusAdminView(APIView):
-<<<<<<< HEAD
+    """Interface that can return Package delivery information"""
+
     def post(self, request, *args, **kwargs):
+        """Return Package status infotmation by JSON format"""
         logging.debug("in post of StatusAdminView")
-=======
-    def get(self, request, *args, **kwargs):
-        logging.debug("in get")
->>>>>>> 18da751fdc90f73d300e1fc02432f0cc9822ce2d
         pid = kwargs['pid']
         if request.headers.get('Content-Type') == 'application/json':
             try:
@@ -38,15 +36,16 @@ class StatusAdminView(APIView):
                 receiver_id = data['data']['id']
                 package = Package.objects.filter(receiver=receiver_id).filter(id=pid)
                 if len(package) == 0:
-                    data = {'msgid':msgid,'data':''}
-                    return JsonResponse(data,status=200)
+                    data = {'msgid': msgid,'data':''}
+                    return JsonResponse(data, status=200)
                 else:    
                     data = serializers.PackageSerializer(package[0]).data
-                    data = {'msgid':msgid,'data':data}
-                return JsonResponse(data,status=200)
+                    data = {'msgid': msgid,'data':data}
+                return JsonResponse(data, status=200)
             except Exception as e:
                 logging.debug('JSON decode error: %s', e)
                 return HttpResponse(status=403)
         else:
             logging.debug('HTTP Header Method Incorrect')
             return HttpResponse(status=403)
+    
