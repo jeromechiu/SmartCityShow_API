@@ -23,6 +23,7 @@ from devices import urls as devices_url
 urlpatterns = [
     path('admin/', admin.site.urls),
     url('api/v1/mapp/updatestatus/', include(status_url)),
+    url('/api/v1/mapp/', include(devices_url)),
     url('api/v1/hub/checkqr/', include(devices_url)),
-    url('api/v1/hub/', include(devices_url)),
+    url('api/v1/mapp/', include(devices_url)),
 ]

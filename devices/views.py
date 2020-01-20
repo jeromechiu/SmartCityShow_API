@@ -18,6 +18,7 @@ from rest_framework.renderers import JSONRenderer
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from fcm_django.models import FCMDevice
+from django.contrib.auth.models import User
 
 if settings.DEBUG:
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, \
@@ -111,6 +112,7 @@ class HubQRAdminView(APIView):
         else:
             logging.debug('HTTP Content-Type Incorrect')
             return HttpResponse(status=403)
+            
 class DroneTakeoffAdminView(APIView):
     def get(self, request, *args, **kwargs):
         logging.debug("in get of DroneTakeoffAdminView")
@@ -142,12 +144,28 @@ class DroneGotAdminView(APIView):
 
 class UploadFCMTokenAdminView(APIView):
     def post(self, request, *args, **kwargs):
-        logging.debug("in get of UploadFCMTokenAdminView")
+        logging.debug("in post of UploadFCMTokenAdminView")
         if request.headers.get('Content-Type') == 'application/json':
-            pass
+            try:
+                data = json.loads(json.dumps(request.data))
+            except json.JSONDecodeError as e:
+                logging.debug('JSON decode error: %s', e)
+                return HttpResponse(status=403)
+            msgid = data['msgid']
+            data = data['data']
+            from fcm_django.models import FCMDevice
+            try:
+                device = FCMDevice.objects.get(device_id=data['device_id'])
+            except ObjectDoesNotExist as e:
+                u = User.objects.filter().first()
+                FCMDevice(name=data['name'], active=True, user=u, device_id=data['device_id'], registration_id=data['registration_id'], type='android').save()
+            return HttpResponse(status=200)
         else:
             logging.debug('HTTP Content-Type Incorrect')
             return HttpResponse(status=403)
+
+
+
 
 
 def addStatus(package_id, status_key):

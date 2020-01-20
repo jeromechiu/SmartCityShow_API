@@ -8,5 +8,6 @@ urlpatterns = [
         re_path(r'^(?P<hid>[^/]+)/(?P<pid>[^/]+)/packagearrival/$', views.DroneArrivalAdminView.as_view(), name='DroneArrivalAdminView'),
         re_path(r'^(?P<hid>[^/]+)/(?P<pid>[^/]+)/missiondone/$', views.DroneGotAdminView.as_view(), name='DroneGotAdminView'),
         path('', views.HubQRAdminView.as_view(), name='HubQRAdminView'),
+        path('fcmtoken/', views.UploadFCMTokenAdminView.as_view(), name='UploadFCMTokenAdminView'),
         
 ]
