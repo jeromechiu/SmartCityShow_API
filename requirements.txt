@@ -3,7 +3,7 @@ astroid==2.3.3
 autopep8==1.4.4
 bson==0.5.8
 dataclasses==0.7
-Django==2.2.9
+Django==2.2.13
 django-jsonfield==1.4.0
 djangorestframework==3.11.0
 djongo==1.2.35
