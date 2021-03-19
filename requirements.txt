@@ -5,7 +5,7 @@ bson==0.5.8
 dataclasses==0.7
 Django==2.2.9
 django-jsonfield==1.4.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 djongo==1.2.35
 isort==4.3.21
 lazy-object-proxy==1.4.3
